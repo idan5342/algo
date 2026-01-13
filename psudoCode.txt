@@ -1,0 +1,62 @@
+create a new array of the following form:
+[
+    {
+        time: item.StartTime
+        type: "Start"
+        ...item (without StopTime)
+    },
+    {
+        time: item.StopTime
+        type: "Stop"
+        ...item (without StartTime)
+    },
+    ... (same for each item)
+]
+
+we will call this array Times
+
+sort Times by time.
+
+now we have the brackets problem with a little complication
+
+make a empty array called Relevent.
+make a new array (called Result) from Times by the following logic:
+if (item.type === "start") {
+    if (Result is empty)
+        Result.push(item and change time to StartTime)
+        continue to the next item
+
+    if (last item in Result is with a StopTime)
+        Result.push(item and change time to StartTime)
+        continue to the next item
+
+    if (last item in Result is without a StopTime)
+        check level:
+        if (item.level <= last item in Result.level)
+            Relevent.push(item)
+            continue to the next item
+
+        if (item.level > last item in Result.level)
+            LIinResult = take the last item in Result
+            Relevent.push(LIinResult with StartTime = item.time)
+            add a StopTime to it that is the start time of the current item (that closes the LIinResult)
+            Result.push(item and change time to StartTime)
+            continue to the next item
+} 
+else (item.type === "stop") {
+    check Relevent:
+    if (there is an item in Relevent that has the same id as item.id) {
+        make a full item (with StartTime and StopTime) and put it in the last item of Result in a field called Owners that is an array
+        check each item 
+        if (last item in Result is without StopTime) {
+            remove this item from Relevent using id
+        } else (with StopTime) {
+            make a partial item that has the StartTime = last item in Result.StopTime and the StopTime of item, add this partial item to Result
+            remove this item from Relevent using id
+        }
+    }
+    if the item.id is not in Relevent then it surely the StopTime of the last item in Result:
+    edit the last item in Result to have a StopTime that is item.time
+    take the first item in Relevent and put it in Result (as needed with StartTime instead of time)
+
+}
