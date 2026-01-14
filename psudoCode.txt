@@ -20,27 +20,25 @@ sort Times by time.
 now we have the brackets problem with a little complication
 
 make a empty array called Relevent.
+create a new variable ActiveItem and set it to null.
 make a new array (called Result) from Times by the following logic:
 if (item.type === "start") {
-    if (Result is empty)
-        Result.push(item and change time to StartTime)
+    if (ActiveItem is null)
+        ActiveItem = item
+        ActiveItem.StartTime = item.time
         continue to the next item
 
-    if (last item in Result is with a StopTime)
-        Result.push(item and change time to StartTime)
+    check level:
+    if (item.level <= ActiveItem.level)
+        Relevent.push(item)
         continue to the next item
 
-    if (last item in Result is without a StopTime)
-        check level:
-        if (item.level <= last item in Result.level)
-            Relevent.push(item)
-            continue to the next item
-
-        if (item.level > last item in Result.level)
-            LIinResult = take the last item in Result
-            Relevent.push(LIinResult with StartTime = item.time)
-            add a StopTime to it that is the start time of the current item (that closes the LIinResult)
-            Result.push(item and change time to StartTime)
+    if (item.level > ActiveItem.level)
+            Relevent.push(ActiveItem with StartTime = item.time)
+            ActiveItem.StopTime = item.time
+            Result.push(ActiveItem)
+            ActiveItem = item
+            ActiveItem.StartTime = item.time
             continue to the next item
 } 
 else (item.type === "stop") {
