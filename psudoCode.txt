@@ -36,6 +36,7 @@ if (item.type === "start") {
     if (item.level > ActiveItem.level)
             Relevent.push(ActiveItem with StartTime = item.time)
             ActiveItem.StopTime = item.time
+            everything in Relevant enters as owners in ActiveItem
             Result.push(ActiveItem)
             ActiveItem = item
             ActiveItem.StartTime = item.time
@@ -45,6 +46,7 @@ else (item.type === "stop") {
     check Relevent:
     if (ActiveItem.id === item.id) {
         ActiveItem.StopTime = item.time
+        everything in Relevant enters as owners in ActiveItem
         Result.push(ActiveItem)
         ActiveItem = null
         next = Relevant.extract_highest_level_that_is_still_active(item.time)
