@@ -1,4 +1,10 @@
-const data = require('./data.json');
+import { PriorityQueue } from '@datastructures-js/priority-queue';
+import fs from 'fs';
+
+const data = JSON.parse(
+  fs.readFileSync(new URL('./data.json', import.meta.url), 'utf8')
+);
+
 
 function createTimesArray(data) {
     return data.reduce((arr, item) => {
@@ -21,11 +27,19 @@ function createTimesArray(data) {
     }, []).sort((a, b) => new Date(a.time) - new Date(b.time));
 }
 
+function addOwners(item, newOwners) {
+    if (!item.Owners) {
+        item.Owners = [];
+    }
+    return [...item.Owners, ...newOwners];
+
+}
+
 function main(data) {
     const timesArray = createTimesArray(data);
-    const relevant = []
+    const relevant = new PriorityQueue((a, b) => b.level - a.level);
     const result = [];
-    const activeItem = null;
+    let activeItem = null;
 
     for (const item of timesArray) {
         if (item.type === "Start") {
@@ -35,15 +49,15 @@ function main(data) {
                 continue;
             }
             if (item.level <= activeItem.level) {
-                relevant.push(item);
+                relevant.enqueue(item);
                 continue
             } else {
                 const activeItemToRelevant = activeItem
-                activeItem.Owners = [...activeItem.Owners, ...relevant];
+                activeItem.Owners = addOwners(activeItem, relevant.toArray())
                 activeItem.StopTime = item.time;
                 result.push(activeItem);
                 activeItemToRelevant.StartTime = item.time // maybe unnecessary
-                relevant.push(activeItemToRelevant);
+                relevant.enqueue(activeItemToRelevant);
                 activeItem = item;
                 activeItem.StartTime = item.time;
                 continue;
@@ -51,21 +65,27 @@ function main(data) {
         } else {
             if (activeItem.id === item.id) {
                 activeItem.StopTime = item.time;
-                activeItem.Owners = [...activeItem.Owners, ...relevant];
+                activeItem.Owners = addOwners(activeItem, relevant.toArray());
                 result.push(activeItem);
                 activeItem = null;
-                const next = findHighestLevelRelevant(relevant);
+                const next = relevant.dequeue();
                 if (next) {
                     activeItem = next;
                     activeItem.StartTime = item.time;
-                    removeNextFromRelevant(relevant, next);
                 }
             } else {
-                const matchingRelevantItem = relevant.find(r => r.id === item.id);
-                relevant.remove(matchingRelevantItem)
-                matchingRelevantItem.StopTime = item.time;
-                activeItem.Owners = [...activeItem.Owners, matchingRelevantItem];
+                const matchingRelevantItem = relevant.toArray().find(r => r.id === item.id);
+                relevant.remove(r => r.id === item.id);
+                if (matchingRelevantItem) {
+                    matchingRelevantItem.StopTime = item.time;
+                    activeItem.Owners = addOwners(activeItem, [matchingRelevantItem]);
+                }
             }
         }
     }
+
+    return result;
 }
+
+const newData = main(data);
+console.log(JSON.stringify(newData, null, 2));

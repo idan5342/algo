@@ -1,0 +1,49 @@
+# =========================
+# Node.js
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# TypeScript build output
+# =========================
+dist/
+build/
+*.tsbuildinfo
+
+# =========================
+# Environment files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Generated output / data
+# =========================
+output*.txt
+*.log
+*.csv
+*.jsonl
+
+# =========================
+# MongoDB local data
+# =========================
+data/
+mongo-data/
+
+# =========================
+# IDEs / Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# OS-specific
+# =========================
+.DS_Store
+Thumbs.db
